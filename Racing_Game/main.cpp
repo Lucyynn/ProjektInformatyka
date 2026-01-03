@@ -1,6 +1,6 @@
 
 #include "Gra.h"
-
+//Zmiana w kodzie
 
 int main()
 {
