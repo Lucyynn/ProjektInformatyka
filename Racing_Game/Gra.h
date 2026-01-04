@@ -30,12 +30,14 @@ private:
 	//Obiekty
 	std::vector<sf::RectangleShape> przeszkody;
 	sf::RectangleShape przeszkoda;
+	sf::RectangleShape gracz;
 	
 
 	//Funkcje Private
 	void initVariables();
 	void initWindow();
 	void initPrzeszkody();
+	void initGracza();
 
 public:
 	
@@ -51,9 +53,12 @@ public:
 	void pollEvents();
 	
 	void updateMousePositions();
+	void updateGracza();
 	void updatePrzeszkoda();
 	void update();
 	
-	void render();
+	void renderGracza();
 	void renderPrzeszkoda();
+	void render();
+	
 };
