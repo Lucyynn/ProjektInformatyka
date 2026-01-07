@@ -13,6 +13,9 @@ void Gra::initVariables()
     this->przeszkodaSpawnTimer = this->przeszkodaSpawnTimerMax;
     this->maxPrzeszkody = 100;
 
+    inTitleScreen = true;
+    selectedOption = 0;
+    keyUpPressed = keyDownPressed = enterPressed = false;
 }
 
 void Gra::initWindow()
@@ -34,6 +37,70 @@ void Gra::initPrzeszkody()
     
 }
 
+// funkcja init title screen
+void Gra::initTitleScreen()
+{
+    if (!font.loadFromFile("font.ttf"))
+    {
+        std::cerr << "Nie mozna wczytac fontu" << std::endl;
+    }
+
+    title.setFont(font);
+    title.setString("RACING GAME");
+    title.setCharacterSize(50);
+    title.setFillColor(sf::Color::White);
+    sf::FloatRect titleBounds = title.getLocalBounds();
+    title.setOrigin(titleBounds.width / 2.f, titleBounds.height / 2.f);
+    title.setPosition(this->okno->getSize().x / 2.f, 100.f);
+
+    option[0].setFont(font);
+    option[0].setString("NOWA GRA");
+    option[0].setCharacterSize(30);
+    option[0].setFillColor(sf::Color::Red);
+    sf::FloatRect opt0Bounds = option[0].getLocalBounds();
+    option[0].setOrigin(opt0Bounds.width / 2.f, opt0Bounds.height / 2.f);
+    option[0].setPosition(this->okno->getSize().x / 2.f, 300.f);
+
+    option[1].setFont(font);
+    option[1].setString("WYJSCIE");
+    option[1].setCharacterSize(30);
+    option[1].setFillColor(sf::Color::White);
+    sf::FloatRect opt1Bounds = option[1].getLocalBounds();
+    option[1].setOrigin(opt1Bounds.width / 2.f, opt1Bounds.height / 2.f);
+    option[1].setPosition(this->okno->getSize().x / 2.f, 400.f);
+}
+
+// funkcja handle title screen
+void Gra::handleTitleScreenInput()
+{
+    if (akcja.type == sf::Event::KeyPressed)
+    {
+        if (akcja.key.code == sf::Keyboard::Up && !keyUpPressed)
+        {
+            selectedOption--;
+            if (selectedOption < 0) selectedOption = 1;
+            keyUpPressed = true;
+        }
+        else if (akcja.key.code == sf::Keyboard::Down && !keyDownPressed)
+        {
+            selectedOption++;
+            if (selectedOption > 1) selectedOption = 0;
+            keyDownPressed = true;
+        }
+        else if (akcja.key.code == sf::Keyboard::Enter && !enterPressed)
+        {
+            enterPressed = true;
+            if (selectedOption == 0) inTitleScreen = false; // NOWA GRA
+            else if (selectedOption == 1) okno->close();    // WYJSCIE
+        }
+    }
+    else if (akcja.type == sf::Event::KeyReleased)
+    {
+        if (akcja.key.code == sf::Keyboard::Up) keyUpPressed = false;
+        if (akcja.key.code == sf::Keyboard::Down) keyDownPressed = false;
+        if (akcja.key.code == sf::Keyboard::Enter) enterPressed = false;
+    }
+}
 
 //Konstruktory / Destruktory
 
@@ -42,8 +109,9 @@ Gra::Gra()
     
     this->initVariables();
 	this->initWindow();
+    this->initTitleScreen();
     this->initPrzeszkody();
-
+    
 }
 
 Gra::~Gra()
@@ -109,8 +177,13 @@ void Gra::pollEvents()
                 this->okno->close();
             }
         }
+    
+
+    if (inTitleScreen) 
+        handleTitleScreenInput();
     }
 }
+
 
 void Gra::updateMousePositions()
 {
@@ -169,6 +242,20 @@ void Gra::renderPrzeszkoda()
 void Gra::render()
 {
 	//Wyczyszczenie okna przed rysowaniem
+    // dodatki do title screen
+    if (inTitleScreen)
+    {
+        for (int i = 0; i < 2; i++)
+            option[i].setFillColor(i == selectedOption ? sf::Color::Red : sf::Color::White);
+
+        this->okno->draw(title);
+        for (int i = 0; i < 2; i++)
+            this->okno->draw(option[i]);
+
+        this->okno->display();
+        return;
+    }
+    
     this->okno->clear();
 
     //Tu bêdzie rysowana gra

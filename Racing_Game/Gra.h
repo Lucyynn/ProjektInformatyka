@@ -28,6 +28,15 @@ private:
 	std::vector<sf::RectangleShape> przeszkody;
 	sf::RectangleShape przeszkoda;
 	
+	// Title screen
+	bool inTitleScreen;
+	int selectedOption;
+	sf::Font font;
+	sf::Text title;
+	sf::Text option[2];
+	bool keyUpPressed;
+	bool keyDownPressed;
+	bool enterPressed;
 	
 	Gracz gracz;
 
@@ -35,6 +44,8 @@ private:
 	void initVariables();
 	void initWindow();
 	void initPrzeszkody();
+	void initTitleScreen();
+	void handleTitleScreenInput();
 
 public:
 	
