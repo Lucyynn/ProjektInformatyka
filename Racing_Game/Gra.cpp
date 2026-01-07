@@ -1,13 +1,15 @@
 #include "Gra.h"
 
 //Prywatne funkcje
+
+
 void Gra::initVariables()
 {
 	this->okno = nullptr;
 
 
     this->punkty = 0;
-    this->przeszkodaSpawnTimerMax = 10.f;
+    this->przeszkodaSpawnTimerMax = 50.f;
     this->przeszkodaSpawnTimer = this->przeszkodaSpawnTimerMax;
     this->maxPrzeszkody = 100;
 
@@ -15,8 +17,9 @@ void Gra::initVariables()
 
 void Gra::initWindow()
 {
+	//W³aœciwoœci okna
 	this->Ustawienia_okna.height = 800;
-	this->Ustawienia_okna.width = 600;
+	this->Ustawienia_okna.width = 800;
     this->okno = new sf::RenderWindow(this->Ustawienia_okna, "Racing Game", sf::Style::Titlebar | sf::Style::Close);
     this->okno->setFramerateLimit(60);
 }
@@ -26,28 +29,26 @@ void Gra::initPrzeszkody()
     //W³aœciwoœci przeszkody
     
     //this->przeszkoda.move(10.f, 10.f);
-    this->przeszkoda.setSize(sf::Vector2f(15.f, 15.f));
+    this->przeszkoda.setSize(sf::Vector2f(120.f, 30.f));
     this->przeszkoda.setFillColor(sf::Color::Red);
-    this->przeszkoda.setOutlineColor(sf::Color::White);
-    this->przeszkoda.setOutlineThickness(5.f);
+    
 }
 
 void Gra::initGracza()
 {
     //W³aœciwoœci gracza
-    this->gracz.setSize(sf::Vector2f(20.f, 50.f));
+    this->gracz.setSize(sf::Vector2f(30.f, 30.f));
     this->gracz.setFillColor(sf::Color::Green);
-    this->gracz.setOutlineColor(sf::Color::White);
-    this->gracz.setOutlineThickness(5.f);
     this->gracz.setPosition(
-        static_cast<float>(this->okno->getSize().x / 2.f - this->gracz.getSize().x / 2.f),
-        static_cast<float>(this->okno->getSize().y - this->gracz.getSize().y - 10.f)
+        static_cast<float>(this->okno->getSize().x / 2.f - this->gracz.getSize().x / 2),
+        static_cast<float>(this->okno->getSize().y - this->gracz.getSize().y - 10)
 	);
     
 }
 
 
 //Konstruktory / Destruktory
+
 Gra::Gra()
 {
 	this->initVariables();
@@ -76,13 +77,29 @@ const bool Gra::running() const
 void Gra::stworzPrzeszkode()
 {
     //Tworzenie przeszkód, losowanie ich wspolrzednych na ekranie, ustawianie ich koloru
-
-    this->przeszkoda.setPosition(
-        static_cast<float>(rand() % static_cast<int>(this->okno->getSize().x - this->przeszkoda.getSize().x)),
-        0.f
-    );
-
-	//this->przeszkoda.setFillColor(sf::Color::Red); //Kolor ju¿ zosta³ wczeœniej ustawiony w initPrzeszkody() zbêdne? 
+    int miejsce_przeszkody = rand() % 3;
+    
+    if (miejsce_przeszkody == 0)
+    {
+        this->przeszkoda.setPosition(
+            static_cast<float>(static_cast<int>( this->okno->getSize().x / 4 - this->przeszkoda.getSize().x / 2)),
+            0.f
+        );
+    }
+    if (miejsce_przeszkody == 1)
+    {
+        this->przeszkoda.setPosition(static_cast<int>(this->okno->getSize().x / 4 * 2 - this->przeszkoda.getSize().x / 2),
+            0.f
+        );
+	}
+    if (miejsce_przeszkody == 2)
+    {
+        this->przeszkoda.setPosition(static_cast<int>(this->okno->getSize().x / 4 * 3 - this->przeszkoda.getSize().x / 2),
+            0.f
+        );
+    }
+    
+	 
     this->przeszkody.push_back(this->przeszkoda);
 }
 
@@ -119,34 +136,24 @@ void Gra::updateGracza()
     if (akcja.type == sf::Event::KeyPressed)
     {
 		//Podstawowy ruch gracza
-        if (akcja.key.code == sf::Keyboard::Right)
+        switch (akcja.key.code)
         {
-            this->gracz.move(10.f, 0.f);
+            case sf::Keyboard::Left:
+                
+                if (this->gracz.getPosition().x > this->okno->getSize().x / 4 - this->gracz.getSize().x / 2) {
+                    this->gracz.move(-20.f, 0.f);
+                }
+				break;
+            case sf::Keyboard::Right:
+
+                if (this->gracz.getPosition().x < this->okno->getSize().x / 4 * 3 - this->gracz.getSize().x / 2) {
+                    this->gracz.move(20.f, 0.f);
+                }
+                break;
+            
+
         }
-        if (akcja.key.code == sf::Keyboard::Left)
-        {
-            this->gracz.move(-10.f, 0.f);
-        }
-        if (akcja.key.code == sf::Keyboard::Up)
-        {
-            this->gracz.move(0.f, -10.f);
-        }
-        if (akcja.key.code == sf::Keyboard::Down)
-        {
-            this->gracz.move(0.f, 10.f);
-        }
-        
-		//Ograniczenie ruchu gracza w osi X
-        if (this->gracz.getPosition().x >= this->okno->getSize().x - this->gracz.getSize().x)
-        {
-            this->gracz.move(-10.f, 0.f);
-        }
-        
-        if (this->gracz.getPosition().x <= 0)
-        {
-            this->gracz.move(10.f, 0.f);
-        }
-        
+        //Narazie zbêdne gracz porusza sie tylko w lewo i prawo
 		//Ograniczenie ruchu gracza w osi Y
         if (this->gracz.getPosition().y >= this->okno->getSize().y - this->gracz.getSize().y - 5.f)
         {
@@ -175,6 +182,8 @@ void Gra::updatePrzeszkoda()
             this->przeszkodaSpawnTimer += 1.f;
         }
     }
+
+	//Ruch przeszkody w dó³ ekranu
 
     for (auto& e : this->przeszkody)
     {
