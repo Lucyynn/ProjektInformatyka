@@ -2,11 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <ctime>
-#include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>
-#include <SFML/Window.hpp>
-#include <SFML/Audio.hpp>
-#include <SFML/Network.hpp>
+#include "Gracz.h"
 
 class Gra
 {
@@ -14,6 +10,7 @@ class Gra
 private:
 	
 	//Zmienne okna
+	
 	sf::RenderWindow* okno;
 	sf::VideoMode Ustawienia_okna;
 	sf::Event akcja;
@@ -22,7 +19,7 @@ private:
 	sf::Vector2i poz_wzgledem_okna;
 
 	//Logika gry
-	int punkty;
+	
 	float przeszkodaSpawnTimer;
 	float przeszkodaSpawnTimerMax;
 	int maxPrzeszkody;
@@ -30,21 +27,21 @@ private:
 	//Obiekty
 	std::vector<sf::RectangleShape> przeszkody;
 	sf::RectangleShape przeszkoda;
-	sf::RectangleShape gracz;
 	
+	
+	Gracz gracz;
 
 	//Funkcje Private
 	void initVariables();
 	void initWindow();
 	void initPrzeszkody();
-	void initGracza();
 
 public:
 	
 	//Konstruktury i destruktory
 	Gra();
 	virtual ~Gra();
-
+	
 	//Accessors
 	const bool running() const;
 
@@ -53,12 +50,12 @@ public:
 	void pollEvents();
 	
 	void updateMousePositions();
-	void updateGracza();
 	void updatePrzeszkoda();
 	void update();
 	
-	void renderGracza();
 	void renderPrzeszkoda();
 	void render();
+	
+	//Zmienne
 	
 };

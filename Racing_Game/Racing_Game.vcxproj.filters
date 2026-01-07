@@ -21,9 +21,15 @@
     <ClCompile Include="Gra.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Gracz.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Gra.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Gracz.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

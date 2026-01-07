@@ -8,7 +8,7 @@ void Gra::initVariables()
 	this->okno = nullptr;
 
 
-    this->punkty = 0;
+    
     this->przeszkodaSpawnTimerMax = 50.f;
     this->przeszkodaSpawnTimer = this->przeszkodaSpawnTimerMax;
     this->maxPrzeszkody = 100;
@@ -34,27 +34,15 @@ void Gra::initPrzeszkody()
     
 }
 
-void Gra::initGracza()
-{
-    //W³aœciwoœci gracza
-    this->gracz.setSize(sf::Vector2f(30.f, 30.f));
-    this->gracz.setFillColor(sf::Color::Green);
-    this->gracz.setPosition(
-        static_cast<float>(this->okno->getSize().x / 2.f - this->gracz.getSize().x / 2),
-        static_cast<float>(this->okno->getSize().y - this->gracz.getSize().y - 10)
-	);
-    
-}
-
 
 //Konstruktory / Destruktory
 
 Gra::Gra()
 {
-	this->initVariables();
+    
+    this->initVariables();
 	this->initWindow();
     this->initPrzeszkody();
-    this->initGracza();
 
 }
 
@@ -62,6 +50,7 @@ Gra::~Gra()
 {
 	delete this->okno;
 }
+
 
 //Accessors
 const bool Gra::running() const
@@ -131,41 +120,7 @@ void Gra::updateMousePositions()
     
 }
 
-void Gra::updateGracza()
-{
-    if (akcja.type == sf::Event::KeyPressed)
-    {
-		//Podstawowy ruch gracza
-        switch (akcja.key.code)
-        {
-            case sf::Keyboard::Left:
-                
-                if (this->gracz.getPosition().x > this->okno->getSize().x / 4 - this->gracz.getSize().x / 2) {
-                    this->gracz.move(-20.f, 0.f);
-                }
-				break;
-            case sf::Keyboard::Right:
 
-                if (this->gracz.getPosition().x < this->okno->getSize().x / 4 * 3 - this->gracz.getSize().x / 2) {
-                    this->gracz.move(20.f, 0.f);
-                }
-                break;
-            
-
-        }
-        //Narazie zbêdne gracz porusza sie tylko w lewo i prawo
-		//Ograniczenie ruchu gracza w osi Y
-        if (this->gracz.getPosition().y >= this->okno->getSize().y - this->gracz.getSize().y - 5.f)
-        {
-            this->gracz.move(0.f, -10.f);
-        }
-
-        if (this->gracz.getPosition().y < 5)
-        {
-            this->gracz.move(0.f, 10.f);
-        }
-    }
-}
 
 void Gra::updatePrzeszkoda()
 {
@@ -196,17 +151,10 @@ void Gra::update()
     this->pollEvents();
     this->updateMousePositions();
     this->updatePrzeszkoda();
-    this->updateGracza();
+    gracz.update(this->okno, this->przeszkoda.getSize().x);
 }
 
 
-
-
-void Gra::renderGracza()
-{
-	//Rysowanie gracza
-	this->okno->draw(this->gracz);
-}
 
 void Gra::renderPrzeszkoda()
 {
@@ -224,10 +172,14 @@ void Gra::render()
     this->okno->clear();
 
     //Tu bêdzie rysowana gra
+    
+    
     this->renderPrzeszkoda();
-    this->renderGracza();
-
-	//Wyœwietlenie okna
+	this->gracz.render(this->okno);
+	
+    
+    
+    //Wyœwietlenie okna
     this->okno->display();
 }
 
