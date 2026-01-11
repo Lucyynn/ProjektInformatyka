@@ -10,7 +10,7 @@ class Gracz
 {
 private:
 	//Obiekty
-	sf::RectangleShape ksztalt;
+	
 	
 	//Funkcje prywatne
 	void initVariables();
@@ -27,7 +27,7 @@ public:
 	
 	
 	//Funkcje publiczne
-	
+	sf::RectangleShape ksztalt;
 	void updateInput(sf::RenderTarget* target, float przeszkoda_size);
 	void update(sf::RenderTarget* target, float przeszkoda_size);
 	void render(sf::RenderTarget *target);

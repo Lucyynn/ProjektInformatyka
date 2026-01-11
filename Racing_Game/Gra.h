@@ -9,6 +9,9 @@ class Gra
 
 private:
 	
+	//Zmienne prywatne
+	float predkosc_przeszkody;
+	
 	//Zmienne okna
 	
 	sf::RenderWindow* okno;
@@ -59,6 +62,7 @@ public:
 	//Funkcje
 	void stworzPrzeszkode();
 	void pollEvents();
+	
 	
 	void updateMousePositions();
 	void updatePrzeszkoda();

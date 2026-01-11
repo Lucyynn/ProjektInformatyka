@@ -1,17 +1,13 @@
 #include "Gra.h"
-
+#include <Windows.h>
 //Prywatne funkcje
 
 
 void Gra::initVariables()
 {
 	this->okno = nullptr;
-
-
     
-    this->przeszkodaSpawnTimerMax = 50.f;
-    this->przeszkodaSpawnTimer = this->przeszkodaSpawnTimerMax;
-    this->maxPrzeszkody = 100;
+    
 
     inTitleScreen = true;
     selectedOption = 0;
@@ -32,9 +28,15 @@ void Gra::initPrzeszkody()
     //W³aœciwoœci przeszkody
     
     //this->przeszkoda.move(10.f, 10.f);
-    this->przeszkoda.setSize(sf::Vector2f(120.f, 30.f));
+    this->przeszkoda.setSize(sf::Vector2f(60.f, 120.f));
     this->przeszkoda.setFillColor(sf::Color::Red);
+    this->predkosc_przeszkody = 2.f;
     
+    
+    
+    this->maxPrzeszkody = 10;
+    this->przeszkodaSpawnTimerMax = 100.f;
+    this->przeszkodaSpawnTimer = this->przeszkodaSpawnTimerMax;
 }
 
 // funkcja init title screen
@@ -157,7 +159,7 @@ void Gra::stworzPrzeszkode()
     }
     
 	 
-    this->przeszkody.push_back(this->przeszkoda);
+	this->przeszkody.push_back(this->przeszkoda);
 }
 
 void Gra::pollEvents()
@@ -185,6 +187,8 @@ void Gra::pollEvents()
 }
 
 
+
+
 void Gra::updateMousePositions()
 {
     //Aktualizuje pozycje kursora wzglêdem okna s³u¿y do tego (Vector2i)
@@ -197,6 +201,7 @@ void Gra::updateMousePositions()
 
 void Gra::updatePrzeszkoda()
 {
+    
     if (this->przeszkody.size() < this->maxPrzeszkody)
     {
         if (this->przeszkodaSpawnTimer >= this->przeszkodaSpawnTimerMax)
@@ -211,20 +216,57 @@ void Gra::updatePrzeszkoda()
         }
     }
 
-	//Ruch przeszkody w dó³ ekranu
+    //Ruch przeszkody w dó³ ekranu
 
     for (auto& e : this->przeszkody)
     {
-        e.move(0.f, 5.f);
+        e.move(0.f, predkosc_przeszkody);
+        if (e.getPosition().y > this->okno->getSize().y)
+        {
+            // Usuwanie przeszkody, gdy wyjdzie poza ekran
+            this->przeszkody.erase(this->przeszkody.begin());
+        }
+
+        //Sprawdzanie kolizcji przeszkody z graczem
+		if (e.getGlobalBounds().intersects(this->gracz.ksztalt.getGlobalBounds()))
+        {
+            std::cout << "Kolizja wykryta!" << std::endl;
+            
+            
+            this->przeszkody.clear();
+			this->gracz.ksztalt.setPosition(385.f, 700.f);
+            inTitleScreen = true;
+            selectedOption = 0;
+            keyUpPressed = keyDownPressed = enterPressed = false;
+            
+		}
     }
+    
+    
+    
+    
 }
+
+
 
 void Gra::update()
 {
     this->pollEvents();
     this->updateMousePositions();
-    this->updatePrzeszkoda();
-    gracz.update(this->okno, this->przeszkoda.getSize().x);
+    
+     // czas w sekundach
+	//Warunek rozpoczêcia gry po wyjœciu z title screen
+    
+    if (!inTitleScreen) {
+        
+        
+        gracz.update(this->okno, this->przeszkoda.getSize().x);
+        this->updatePrzeszkoda();
+        
+            
+        return;
+    }
+    
 }
 
 
@@ -232,10 +274,15 @@ void Gra::update()
 void Gra::renderPrzeszkoda()
 {
 	//Rysowanie przeszkód
+    
     for (auto& e : this->przeszkody)
     {
         this->okno->draw(e);
+		std::cout << "Przeszkoda rysowana na pozycji: " << e.getPosition().x << ", " << e.getPosition().y << std::endl;
+        
     }
+    
+    
 }
 
 
