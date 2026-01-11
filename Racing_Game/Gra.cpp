@@ -7,9 +7,8 @@ void Gra::initVariables()
 {
 	this->okno = nullptr;
     
-    
-
     inTitleScreen = true;
+    this->wynik = 0.f;
     selectedOption = 0;
     keyUpPressed = keyDownPressed = enterPressed = false;
 }
@@ -37,6 +36,14 @@ void Gra::initPrzeszkody()
     this->maxPrzeszkody = 10;
     this->przeszkodaSpawnTimerMax = 100.f;
     this->przeszkodaSpawnTimer = this->przeszkodaSpawnTimerMax;
+}
+
+void Gra::initMoneta()
+{
+	this->moneta.setSize(sf::Vector2f(30.f, 30.f));
+	this->moneta.setFillColor(sf::Color::Yellow);
+	this->moneta.setPosition(this->okno->getSize().x / 2 - this->moneta.getSize().x / 2, 400.f);
+	this->predkosc_monety = 5.f;
 }
 
 // funkcja init title screen
@@ -72,6 +79,22 @@ void Gra::initTitleScreen()
     option[1].setPosition(this->okno->getSize().x / 2.f, 400.f);
 }
 
+void Gra::initFonts()
+{
+    if (!this->font_wyniku.loadFromFile("Dosis_font.ttf"))
+    {
+		std::cout << "ERROR::GRA::INITFONTS:: Nie mozna wczytac fontu wyniku" << std::endl;
+    }
+}
+
+void Gra::initWynikText()
+{
+	this->wyswietlanie_wyniku.setFont(this->font_wyniku);
+    this->wyswietlanie_wyniku.setCharacterSize(16);
+	this->wyswietlanie_wyniku.setFillColor(sf::Color::White);
+	this->wyswietlanie_wyniku.setPosition(10.f, 10.f);
+}
+
 // funkcja handle title screen
 void Gra::handleTitleScreenInput()
 {
@@ -92,7 +115,7 @@ void Gra::handleTitleScreenInput()
         else if (akcja.key.code == sf::Keyboard::Enter && !enterPressed)
         {
             enterPressed = true;
-            if (selectedOption == 0) inTitleScreen = false; // NOWA GRA
+            if (selectedOption == 0) { inTitleScreen = false; zegar.restart(); } // NOWA GRA
             else if (selectedOption == 1) okno->close();    // WYJSCIE
         }
     }
@@ -110,10 +133,15 @@ Gra::Gra()
 {
     
     this->initVariables();
-	this->initWindow();
+    this->initWindow();
+    this->initFonts();
+	
+    
+	
+    this->initWynikText();
     this->initTitleScreen();
     this->initPrzeszkody();
-    
+    this->initMoneta();
 }
 
 Gra::~Gra()
@@ -136,28 +164,8 @@ const bool Gra::running() const
 void Gra::stworzPrzeszkode()
 {
     //Tworzenie przeszkód, losowanie ich wspolrzednych na ekranie, ustawianie ich koloru
-    int miejsce_przeszkody = rand() % 3;
     
-    if (miejsce_przeszkody == 0)
-    {
-        this->przeszkoda.setPosition(
-            static_cast<float>(static_cast<int>( this->okno->getSize().x / 4 - this->przeszkoda.getSize().x / 2)),
-            0.f
-        );
-    }
-    if (miejsce_przeszkody == 1)
-    {
-        this->przeszkoda.setPosition(static_cast<int>(this->okno->getSize().x / 4 * 2 - this->przeszkoda.getSize().x / 2),
-            0.f
-        );
-	}
-    if (miejsce_przeszkody == 2)
-    {
-        this->przeszkoda.setPosition(static_cast<int>(this->okno->getSize().x / 4 * 3 - this->przeszkoda.getSize().x / 2),
-            0.f
-        );
-    }
-    
+	losowanie_drogi(&this->przeszkoda);
 	 
 	this->przeszkody.push_back(this->przeszkoda);
 }
@@ -188,6 +196,32 @@ void Gra::pollEvents()
 
 
 
+
+void Gra::losowanie_drogi(sf::RectangleShape *obiekt)
+{
+    int wylosowane_miejsce = rand() % 3;
+
+    if (wylosowane_miejsce == 0)
+    {
+        obiekt->setPosition(
+            static_cast<float>(static_cast<int>(this->okno->getSize().x / 4 - obiekt->getSize().x / 2)),
+            0.f
+        );
+    }
+    if (wylosowane_miejsce == 1)
+    {
+        obiekt->setPosition(static_cast<int>(this->okno->getSize().x / 4 * 2 - obiekt->getSize().x / 2),
+            0.f
+        );
+    }
+    if (wylosowane_miejsce == 2)
+    {
+        obiekt->setPosition(static_cast<int>(this->okno->getSize().x / 4 * 3 - obiekt->getSize().x / 2),
+            0.f
+        );
+    }
+
+}
 
 void Gra::updateMousePositions()
 {
@@ -235,15 +269,56 @@ void Gra::updatePrzeszkoda()
             
             this->przeszkody.clear();
 			this->gracz.ksztalt.setPosition(385.f, 700.f);
-            inTitleScreen = true;
-            selectedOption = 0;
+			inTitleScreen = true;
             keyUpPressed = keyDownPressed = enterPressed = false;
+            selectedOption = 0;
+            wynik = 0.f;
+            this->moneta.setPosition(this->okno->getSize().x / 2 - this->moneta.getSize().x / 2, 400.f);
+            
+            
             
 		}
     }
     
     
     
+    
+}
+
+void Gra::updateMoneta()
+{
+    if(this->moneta.getGlobalBounds().intersects(this->gracz.ksztalt.getGlobalBounds()))
+    {
+        //Zbieranie monety
+        this->wynik += 50.f;
+		//Przeniesienie monety w losowe miejsce
+        
+		losowanie_drogi(&this->moneta);
+	}
+
+	moneta.move(0.f, predkosc_monety);
+    
+    if(moneta.getPosition().y > this->okno->getSize().y)
+    {
+        //Przeniesienie monety w losowe miejsce gdy wyjdzie poza ekran
+        losowanie_drogi(&this->moneta);
+	}
+}
+
+void Gra::updateText()
+{
+	this->wyswietlanie_wyniku.setString("Wynik: " + std::to_string((this->wynik)));
+}
+
+void Gra::updateWynik()
+{
+    
+    this->czas1 = zegar.getElapsedTime();
+    if (this->czas1.asSeconds() >= 1.f)
+    {
+        zegar.restart();
+        wynik += 10.f;
+    }
     
 }
 
@@ -254,18 +329,20 @@ void Gra::update()
     this->pollEvents();
     this->updateMousePositions();
     
-     // czas w sekundach
-	//Warunek rozpoczêcia gry po wyjœciu z title screen
-    
-    if (!inTitleScreen) {
+
+    if (!inTitleScreen)
+    {
         
         
         gracz.update(this->okno, this->przeszkoda.getSize().x);
         this->updatePrzeszkoda();
+        this->updateMoneta();
+        updateWynik();
+        updateText();
         
-            
         return;
     }
+    
     
 }
 
@@ -279,10 +356,20 @@ void Gra::renderPrzeszkoda()
     {
         this->okno->draw(e);
 		std::cout << "Przeszkoda rysowana na pozycji: " << e.getPosition().x << ", " << e.getPosition().y << std::endl;
-        
     }
     
     
+}
+
+void Gra::renderMoneta()
+{
+    this->okno->draw(this->moneta);
+}
+
+void Gra::renderText()
+{
+    this->okno->draw(this->wyswietlanie_wyniku);
+
 }
 
 
@@ -309,8 +396,9 @@ void Gra::render()
     
     
     this->renderPrzeszkoda();
-	this->gracz.render(this->okno);
-	
+    this->renderMoneta();
+    this->gracz.render(this->okno);
+    this->renderText();
     
     
     //Wyœwietlenie okna

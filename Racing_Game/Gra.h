@@ -11,18 +11,23 @@ private:
 	
 	//Zmienne prywatne
 	float predkosc_przeszkody;
+	unsigned wynik;
+	float predkosc_monety;
+	sf::Clock zegar;
+	sf::Time czas1;
+	
 	
 	//Zmienne okna
-	
 	sf::RenderWindow* okno;
 	sf::VideoMode Ustawienia_okna;
 	sf::Event akcja;
-	
+	sf::Font font_wyniku;
+	sf::Text wyswietlanie_wyniku;
+
 	//Pozycje kursora
 	sf::Vector2i poz_wzgledem_okna;
 
 	//Logika gry
-	
 	float przeszkodaSpawnTimer;
 	float przeszkodaSpawnTimerMax;
 	int maxPrzeszkody;
@@ -30,7 +35,8 @@ private:
 	//Obiekty
 	std::vector<sf::RectangleShape> przeszkody;
 	sf::RectangleShape przeszkoda;
-	
+	sf::RectangleShape moneta;
+
 	// Title screen
 	bool inTitleScreen;
 	int selectedOption;
@@ -47,7 +53,10 @@ private:
 	void initVariables();
 	void initWindow();
 	void initPrzeszkody();
+	void initMoneta();
 	void initTitleScreen();
+	void initFonts();
+	void initWynikText();
 	void handleTitleScreenInput();
 
 public:
@@ -63,12 +72,17 @@ public:
 	void stworzPrzeszkode();
 	void pollEvents();
 	
-	
+	void losowanie_drogi(sf::RectangleShape *obiekt);
 	void updateMousePositions();
 	void updatePrzeszkoda();
+	void updateMoneta();
+	void updateText();
+	void updateWynik();
 	void update();
 	
 	void renderPrzeszkoda();
+	void renderMoneta();
+	void renderText();
 	void render();
 	
 	//Zmienne
