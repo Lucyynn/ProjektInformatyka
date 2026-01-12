@@ -51,6 +51,20 @@ void Gracz::updateInput(sf::RenderTarget* target, float przeszkoda_size)
         if(ksztalt.getPosition().x < (target->getSize().x / 4 * 3)  + przeszkoda_size / 2 - this->ksztalt.getSize().x / 2)
         this->ksztalt.move(this->predkosc_gracza, 0.f);
     }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+    {
+        if (ksztalt.getPosition().y > 0.f)
+        {
+            this->ksztalt.move(0.f, -this->predkosc_gracza);
+        }
+	}
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+    {
+        if (ksztalt.getPosition().y < target->getSize().y - this->ksztalt.getSize().y)
+        {
+            this->ksztalt.move(0.f, this->predkosc_gracza);
+        }
+	}
 
 }
 
