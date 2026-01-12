@@ -26,6 +26,9 @@ public:
 	virtual ~Gracz();
 	
 	
+	//Zmienne publiczne
+	bool niewrazliwosc_na_przeszkody = false;
+
 	//Funkcje publiczne
 	sf::RectangleShape ksztalt;
 	void updateInput(sf::RenderTarget* target, float przeszkoda_size);
