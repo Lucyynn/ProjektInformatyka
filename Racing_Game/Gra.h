@@ -13,8 +13,11 @@ private:
 	float predkosc_przeszkody;
 	unsigned wynik;
 	float predkosc_monety;
+	float predkosc_gwiazdki;
 	sf::Clock zegar;
+	sf::Clock zegar_niewrazliwosci;
 	sf::Time czas1;
+	sf::Time czas_niewrazliwosci;
 	
 	
 	//Zmienne okna
@@ -36,6 +39,7 @@ private:
 	std::vector<sf::RectangleShape> przeszkody;
 	sf::RectangleShape przeszkoda;
 	sf::RectangleShape moneta;
+	sf::RectangleShape gwiazdka;
 
 	// Title screen
 	bool inTitleScreen;
@@ -54,6 +58,7 @@ private:
 	void initWindow();
 	void initPrzeszkody();
 	void initMoneta();
+	void initGwiazdka();
 	void initTitleScreen();
 	void initFonts();
 	void initWynikText();
@@ -74,14 +79,17 @@ public:
 	
 	void losowanie_drogi(sf::RectangleShape *obiekt);
 	void updateMousePositions();
+	void losowanie_rodzaju_przeszkody(sf::RectangleShape* obiekt);
 	void updatePrzeszkoda();
 	void updateMoneta();
+	void updateGwiazdka();
 	void updateText();
 	void updateWynik();
 	void update();
 	
 	void renderPrzeszkoda();
 	void renderMoneta();
+	void renderGwiazdka();
 	void renderText();
 	void render();
 	

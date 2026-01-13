@@ -26,7 +26,7 @@ void Gra::initPrzeszkody()
 {
     //W³aœciwoœci przeszkody
     
-    //this->przeszkoda.move(10.f, 10.f);
+    
     this->przeszkoda.setSize(sf::Vector2f(60.f, 120.f));
     this->przeszkoda.setFillColor(sf::Color::Red);
     this->predkosc_przeszkody = 2.f;
@@ -44,6 +44,15 @@ void Gra::initMoneta()
 	this->moneta.setFillColor(sf::Color::Yellow);
 	this->moneta.setPosition(this->okno->getSize().x / 2 - this->moneta.getSize().x / 2, 400.f);
 	this->predkosc_monety = 5.f;
+}
+
+void Gra::initGwiazdka()
+{
+    this->predkosc_gwiazdki = 4.f;
+    this->gwiazdka.setSize(sf::Vector2f(20.f, 20.f));
+	this->gwiazdka.setFillColor(sf::Color::Cyan);
+	this->gwiazdka.setPosition(this->okno->getSize().x / 2 - this->gwiazdka.getSize().x / 2, 600.f);
+
 }
 
 // funkcja init title screen
@@ -142,6 +151,7 @@ Gra::Gra()
     this->initTitleScreen();
     this->initPrzeszkody();
     this->initMoneta();
+    this->initGwiazdka();
 }
 
 Gra::~Gra()
@@ -163,8 +173,9 @@ const bool Gra::running() const
 
 void Gra::stworzPrzeszkode()
 {
-    //Tworzenie przeszkód, losowanie ich wspolrzednych na ekranie, ustawianie ich koloru
+    //Tworzenie przeszkód, losowanie ich wspolrzednych na ekranie
     
+	losowanie_rodzaju_przeszkody(&this->przeszkoda);
 	losowanie_drogi(&this->przeszkoda);
 	 
 	this->przeszkody.push_back(this->przeszkoda);
@@ -231,6 +242,28 @@ void Gra::updateMousePositions()
     
 }
 
+void Gra::losowanie_rodzaju_przeszkody(sf::RectangleShape* obiekt)
+{
+    int losowanie_rodzaju_obiektu = rand() % 3;
+    if (losowanie_rodzaju_obiektu == 0)
+    {
+        obiekt->setSize(sf::Vector2f(60.f, 90.f));
+        obiekt->setFillColor(sf::Color::Red);
+	}
+    
+    if (losowanie_rodzaju_obiektu == 1)
+    {
+        obiekt->setSize(sf::Vector2f(120.f, 30.f));
+        obiekt->setFillColor(sf::Color::Red);
+    }
+
+    if (losowanie_rodzaju_obiektu == 2)
+    {
+        obiekt->setSize(sf::Vector2f(40.f, 80.f));
+        obiekt->setFillColor(sf::Color::Red);
+    }
+}
+
 
 
 void Gra::updatePrzeszkoda()
@@ -262,22 +295,25 @@ void Gra::updatePrzeszkoda()
         }
 
         //Sprawdzanie kolizcji przeszkody z graczem
-		if (e.getGlobalBounds().intersects(this->gracz.ksztalt.getGlobalBounds()))
+        if (gracz.niewrazliwosc_na_przeszkody == false)
         {
-            std::cout << "Kolizja wykryta!" << std::endl;
-            
-            
-            this->przeszkody.clear();
-			this->gracz.ksztalt.setPosition(385.f, 700.f);
-			inTitleScreen = true;
-            keyUpPressed = keyDownPressed = enterPressed = false;
-            selectedOption = 0;
-            wynik = 0.f;
-            this->moneta.setPosition(this->okno->getSize().x / 2 - this->moneta.getSize().x / 2, 400.f);
-            
-            
-            
-		}
+            if (e.getGlobalBounds().intersects(this->gracz.ksztalt.getGlobalBounds()))
+            {
+                std::cout << "Kolizja wykryta!" << std::endl;
+
+
+                this->przeszkody.clear();
+                this->gracz.ksztalt.setPosition(385.f, 700.f);
+                inTitleScreen = true;
+                keyUpPressed = keyDownPressed = enterPressed = false;
+                selectedOption = 0;
+                wynik = 0.f;
+                this->moneta.setPosition(this->okno->getSize().x / 2 - this->moneta.getSize().x / 2, 400.f);
+
+
+
+            }
+        }
     }
     
     
@@ -303,6 +339,41 @@ void Gra::updateMoneta()
         //Przeniesienie monety w losowe miejsce gdy wyjdzie poza ekran
         losowanie_drogi(&this->moneta);
 	}
+}
+
+void Gra::updateGwiazdka()
+{
+	
+    this->gwiazdka.move(0.f, predkosc_gwiazdki);
+
+    //Zbieranie gwiazdki
+    
+    if (this->gwiazdka.getGlobalBounds().intersects(this->gracz.ksztalt.getGlobalBounds()))
+    {
+        zegar_niewrazliwosci.restart();
+        gracz.ksztalt.setFillColor(sf::Color::Magenta);
+        gracz.niewrazliwosc_na_przeszkody = true;
+		this->gwiazdka.setPosition(-100, -100);
+    }
+    
+
+    if (gracz.niewrazliwosc_na_przeszkody)
+    {
+		this->czas_niewrazliwosci = zegar_niewrazliwosci.getElapsedTime();
+        if (this->czas_niewrazliwosci.asSeconds() >= 5)
+        {
+			gracz.ksztalt.setFillColor(sf::Color::Green);
+            gracz.niewrazliwosc_na_przeszkody = false;
+			zegar_niewrazliwosci.restart();
+        }
+    }
+    
+
+    if (gwiazdka.getPosition().y > this->okno->getSize().y)
+    {
+        //Przeniesienie gwiazdki w losowe miejsce gdy wyjdzie poza ekran
+        losowanie_drogi(&this->gwiazdka);
+    }
 }
 
 void Gra::updateText()
@@ -337,8 +408,9 @@ void Gra::update()
         gracz.update(this->okno, this->przeszkoda.getSize().x);
         this->updatePrzeszkoda();
         this->updateMoneta();
-        updateWynik();
-        updateText();
+        this->updateGwiazdka();
+        this->updateWynik();
+        this->updateText();
         
         return;
     }
@@ -364,6 +436,11 @@ void Gra::renderPrzeszkoda()
 void Gra::renderMoneta()
 {
     this->okno->draw(this->moneta);
+}
+
+void Gra::renderGwiazdka()
+{
+    this->okno->draw(this->gwiazdka);
 }
 
 void Gra::renderText()
@@ -397,6 +474,7 @@ void Gra::render()
     
     this->renderPrzeszkoda();
     this->renderMoneta();
+    this->renderGwiazdka();
     this->gracz.render(this->okno);
     this->renderText();
     
