@@ -31,6 +31,7 @@ public:
 
 	//Funkcje publiczne
 	sf::RectangleShape ksztalt;
+	sf::Texture pixelAuto;
 	void updateInput(sf::RenderTarget* target, float przeszkoda_size);
 	void update(sf::RenderTarget* target, float przeszkoda_size);
 	void render(sf::RenderTarget *target);
