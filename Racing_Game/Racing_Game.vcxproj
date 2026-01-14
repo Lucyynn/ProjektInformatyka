@@ -138,6 +138,13 @@
   <ItemGroup>
     <ClInclude Include="Gra.h" />
     <ClInclude Include="Gracz.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="wyniki.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Racing_Game.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

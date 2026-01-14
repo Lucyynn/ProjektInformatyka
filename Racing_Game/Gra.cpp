@@ -1,5 +1,6 @@
 #include "Gra.h"
 #include <Windows.h>
+#include <fstream>
 //Prywatne funkcje
 
 
@@ -20,6 +21,21 @@ void Gra::initWindow()
 	this->Ustawienia_okna.width = 800;
     this->okno = new sf::RenderWindow(this->Ustawienia_okna, "Racing Game", sf::Style::Titlebar | sf::Style::Close);
     this->okno->setFramerateLimit(60);
+}
+
+void Gra::initTlo()
+{
+    this->pixleTlo.loadFromFile("assets/tlo.png");
+
+    this->tlo.setSize(
+        sf::Vector2f(
+            static_cast<float>(this->okno->getSize().x),
+            static_cast<float>(this->okno->getSize().y)
+        )
+    );
+
+    this->tlo.setTexture(&this->pixleTlo);
+    this->tlo.setPosition(0.f, 0.f);
 }
 
 void Gra::initPrzeszkody()
@@ -145,7 +161,7 @@ Gra::Gra()
     this->initWindow();
     this->initFonts();
 	
-    
+    this->initTlo();
 	
     this->initWynikText();
     this->initTitleScreen();
@@ -200,8 +216,8 @@ void Gra::pollEvents()
         }
     
 
-    if (inTitleScreen) 
-        handleTitleScreenInput();
+        if (inTitleScreen)
+            handleTitleScreenInput();
     }
 }
 
@@ -214,22 +230,25 @@ void Gra::losowanie_drogi(sf::RectangleShape *obiekt)
 
     if (wylosowane_miejsce == 0)
     {
-        obiekt->setPosition(
-            static_cast<float>(static_cast<int>(this->okno->getSize().x / 4 - obiekt->getSize().x / 2)),
-            0.f
-        );
+        //obiekt->setPosition(
+        //    static_cast<float>(static_cast<int>(this->okno->getSize().x / 4 - obiekt->getSize().x / 2)),
+        //    0.f
+        //);
+        obiekt->setPosition(150.f - obiekt->getSize().x / 2, 0.f);
     }
     if (wylosowane_miejsce == 1)
     {
-        obiekt->setPosition(static_cast<int>(this->okno->getSize().x / 4 * 2 - obiekt->getSize().x / 2),
-            0.f
-        );
+        //obiekt->setPosition(static_cast<int>(this->okno->getSize().x / 4 * 2 - obiekt->getSize().x / 2),
+        //    0.f
+        //);
+        obiekt->setPosition(400.f - obiekt->getSize().x / 2, 0.f);
     }
     if (wylosowane_miejsce == 2)
     {
-        obiekt->setPosition(static_cast<int>(this->okno->getSize().x / 4 * 3 - obiekt->getSize().x / 2),
-            0.f
-        );
+        //obiekt->setPosition(static_cast<int>(this->okno->getSize().x / 4 * 3 - obiekt->getSize().x / 2),
+        //    0.f
+        //);
+        obiekt->setPosition(650.f - obiekt->getSize().x / 2, 0.f);
     }
 
 }
@@ -299,19 +318,32 @@ void Gra::updatePrzeszkoda()
         {
             if (e.getGlobalBounds().intersects(this->gracz.ksztalt.getGlobalBounds()))
             {
-                std::cout << "Kolizja wykryta!" << std::endl;
+                //Zapis wyniku do pliku z wynikami
+                //===============================================
+                std::fstream plik;
+                plik.open("wyniki.txt", std::ios::app);
 
+                if (plik.good() == true)
+                {
+                    std::cout << "Plik otwarty" << std::endl;
+                }
+
+                plik << wynik << "\n";
+
+                plik.close();
+                //===============================================
+
+                std::cout << "Kolizja wykryta!" << std::endl;
 
                 this->przeszkody.clear();
                 this->gracz.ksztalt.setPosition(385.f, 700.f);
+                
                 inTitleScreen = true;
+
                 keyUpPressed = keyDownPressed = enterPressed = false;
                 selectedOption = 0;
                 wynik = 0.f;
                 this->moneta.setPosition(this->okno->getSize().x / 2 - this->moneta.getSize().x / 2, 400.f);
-
-
-
             }
         }
     }
@@ -399,12 +431,9 @@ void Gra::update()
 {
     this->pollEvents();
     this->updateMousePositions();
-    
 
     if (!inTitleScreen)
     {
-        
-        
         gracz.update(this->okno, this->przeszkoda.getSize().x);
         this->updatePrzeszkoda();
         this->updateMoneta();
@@ -414,11 +443,7 @@ void Gra::update()
         
         return;
     }
-    
-    
 }
-
-
 
 void Gra::renderPrzeszkoda()
 {
@@ -429,8 +454,7 @@ void Gra::renderPrzeszkoda()
         this->okno->draw(e);
 		std::cout << "Przeszkoda rysowana na pozycji: " << e.getPosition().x << ", " << e.getPosition().y << std::endl;
     }
-    
-    
+
 }
 
 void Gra::renderMoneta()
@@ -449,7 +473,6 @@ void Gra::renderText()
 
 }
 
-
 void Gra::render()
 {
 	//Wyczyszczenie okna przed rysowaniem
@@ -466,18 +489,18 @@ void Gra::render()
         this->okno->display();
         return;
     }
-    
+
     this->okno->clear();
 
     //Tu bêdzie rysowana gra
     
-    
+    this->okno->draw(this->tlo);
+
     this->renderPrzeszkoda();
     this->renderMoneta();
     this->renderGwiazdka();
     this->gracz.render(this->okno);
     this->renderText();
-    
     
     //Wyœwietlenie okna
     this->okno->display();

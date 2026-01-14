@@ -1,4 +1,5 @@
 #include "Gracz.h"
+#include <iostream>
 
 
 void Gracz::initVariables()
@@ -9,18 +10,19 @@ void Gracz::initVariables()
 
 void Gracz::initKsztalt()
 {
-    this->ksztalt.setSize(sf::Vector2f(30.f, 30.f));
-    this->ksztalt.setFillColor(sf::Color::Green);
+    this->pixelAuto.loadFromFile("assets/auto2v2.png");
+    
+    this->ksztalt.setSize(sf::Vector2f(100.f, 100.f));
+    this->ksztalt.setTexture(&this->pixelAuto);
 }
 
     
 Gracz::Gracz(float x, float y)
 {
 	
-	ksztalt.setPosition(x, y);
     initKsztalt();
     initVariables();
-    
+    ksztalt.setPosition(x, y);
 }
 
 Gracz::~Gracz()
@@ -41,15 +43,25 @@ void Gracz::updateInput(sf::RenderTarget* target, float przeszkoda_size)
 	//Ruch gracza w lewo i prawo
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
     {
-        if (ksztalt.getPosition().x > target->getSize().x / 4 - przeszkoda_size / 2 - this->ksztalt.getSize().x / 2)
+        //if (ksztalt.getPosition().x > target->getSize().x / 4 - przeszkoda_size / 2 - this->ksztalt.getSize().x / 2)
+        //{
+        //    this->ksztalt.move(-this->predkosc_gracza, 0.f);
+        //}
+        if (ksztalt.getPosition().x > 0.f + 25.f)
         {
             this->ksztalt.move(-this->predkosc_gracza, 0.f);
         }
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
     {
-        if(ksztalt.getPosition().x < (target->getSize().x / 4 * 3)  + przeszkoda_size / 2 - this->ksztalt.getSize().x / 2)
-        this->ksztalt.move(this->predkosc_gracza, 0.f);
+        //if (ksztalt.getPosition().x < (target->getSize().x / 4 * 3) + przeszkoda_size / 2 - this->ksztalt.getSize().x / 2)
+        //{
+        //    this->ksztalt.move(this->predkosc_gracza, 0.f);
+        //}
+        if (ksztalt.getPosition().x < 800.f - 125.f)
+        {
+            this->ksztalt.move(this->predkosc_gracza, 0.f);
+        }
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
     {

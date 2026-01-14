@@ -40,6 +40,8 @@ private:
 	sf::RectangleShape przeszkoda;
 	sf::RectangleShape moneta;
 	sf::RectangleShape gwiazdka;
+	sf::Texture pixleTlo;
+	sf::RectangleShape tlo;
 
 	// Title screen
 	bool inTitleScreen;
@@ -50,12 +52,13 @@ private:
 	bool keyUpPressed;
 	bool keyDownPressed;
 	bool enterPressed;
-	
+
 	Gracz gracz;
 
 	//Funkcje Private
 	void initVariables();
 	void initWindow();
+	void initTlo();
 	void initPrzeszkody();
 	void initMoneta();
 	void initGwiazdka();
