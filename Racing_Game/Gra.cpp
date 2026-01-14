@@ -23,9 +23,12 @@ void Gra::initWindow()
     this->okno->setFramerateLimit(60);
 }
 
+//ruszajace sie tlo gry
 void Gra::initTlo()
 {
     this->pixleTlo.loadFromFile("assets/tlo.png");
+
+    tloSpeed = 2.f;
 
     this->tlo.setSize(
         sf::Vector2f(
@@ -34,8 +37,18 @@ void Gra::initTlo()
         )
     );
 
+    this->tlo1.setSize(
+        sf::Vector2f(
+            static_cast<float>(this->okno->getSize().x),
+            static_cast<float>(this->okno->getSize().y)
+        )
+    );
+
     this->tlo.setTexture(&this->pixleTlo);
+    this->tlo1.setTexture(&this->pixleTlo);
+
     this->tlo.setPosition(0.f, 0.f);
+    this->tlo1.setPosition(0.f, -static_cast<float>(okno->getSize().y));
 }
 
 void Gra::initPrzeszkody()
@@ -43,7 +56,7 @@ void Gra::initPrzeszkody()
     //W³aœciwoœci przeszkody
     
     
-    this->przeszkoda.setSize(sf::Vector2f(60.f, 120.f));
+    this->przeszkoda.setSize(sf::Vector2f(100.f, 100.f));
     this->przeszkoda.setFillColor(sf::Color::Red);
     this->predkosc_przeszkody = 2.f;
     
@@ -116,7 +129,7 @@ void Gra::initWynikText()
 {
 	this->wyswietlanie_wyniku.setFont(this->font_wyniku);
     this->wyswietlanie_wyniku.setCharacterSize(16);
-	this->wyswietlanie_wyniku.setFillColor(sf::Color::White);
+	this->wyswietlanie_wyniku.setFillColor(sf::Color::Black);
 	this->wyswietlanie_wyniku.setPosition(10.f, 10.f);
 }
 
@@ -263,23 +276,30 @@ void Gra::updateMousePositions()
 
 void Gra::losowanie_rodzaju_przeszkody(sf::RectangleShape* obiekt)
 {
+    //this->przeszkodaGrafika1.loadFromFile("assets/auto1v2.png");
+    //this->przeszkodaGrafika2.loadFromFile("assets/auto2v2.png");
+    //this->przeszkodaGrafika3.loadFromFile("assets/auto3v2.png");
+
     int losowanie_rodzaju_obiektu = rand() % 3;
     if (losowanie_rodzaju_obiektu == 0)
     {
-        obiekt->setSize(sf::Vector2f(60.f, 90.f));
+        obiekt->setSize(sf::Vector2f(100.f, 80.f));
         obiekt->setFillColor(sf::Color::Red);
+        //obiekt->setTexture(&this->przeszkodaGrafika1);
 	}
     
     if (losowanie_rodzaju_obiektu == 1)
     {
-        obiekt->setSize(sf::Vector2f(120.f, 30.f));
+        obiekt->setSize(sf::Vector2f(20.f, 100.f));
         obiekt->setFillColor(sf::Color::Red);
+        //obiekt->setTexture(&this->przeszkodaGrafika2);
     }
 
     if (losowanie_rodzaju_obiektu == 2)
     {
-        obiekt->setSize(sf::Vector2f(40.f, 80.f));
+        obiekt->setSize(sf::Vector2f(50.f, 70.f));
         obiekt->setFillColor(sf::Color::Red);
+        //obiekt->setTexture(&this->przeszkodaGrafika3);
     }
 }
 
@@ -434,6 +454,7 @@ void Gra::update()
 
     if (!inTitleScreen)
     {
+        this->updateTlo();
         gracz.update(this->okno, this->przeszkoda.getSize().x);
         this->updatePrzeszkoda();
         this->updateMoneta();
@@ -442,6 +463,22 @@ void Gra::update()
         this->updateText();
         
         return;
+    }
+}
+
+void Gra::updateTlo()
+{
+    tlo.move(0.f, tloSpeed);
+    tlo1.move(0.f, tloSpeed);
+
+    if (tlo.getPosition().y >= okno->getSize().y)
+    {
+        tlo.setPosition(0.f, tlo1.getPosition().y - okno->getSize().y);
+    }
+
+    if (tlo1.getPosition().y >= okno->getSize().y)
+    {
+        tlo1.setPosition(0.f, tlo.getPosition().y - okno->getSize().y);
     }
 }
 
@@ -495,6 +532,7 @@ void Gra::render()
     //Tu bêdzie rysowana gra
     
     this->okno->draw(this->tlo);
+    this->okno->draw(this->tlo1);
 
     this->renderPrzeszkoda();
     this->renderMoneta();
