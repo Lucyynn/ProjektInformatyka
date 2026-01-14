@@ -143,9 +143,6 @@
   <ItemGroup>
     <Text Include="wyniki.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Racing_Game.rc" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

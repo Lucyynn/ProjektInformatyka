@@ -40,8 +40,12 @@ private:
 	sf::RectangleShape przeszkoda;
 	sf::RectangleShape moneta;
 	sf::RectangleShape gwiazdka;
+
+	//Background
 	sf::Texture pixleTlo;
 	sf::RectangleShape tlo;
+	sf::RectangleShape tlo1;
+	float tloSpeed;
 
 	// Title screen
 	bool inTitleScreen;
@@ -77,6 +81,12 @@ public:
 	const bool running() const;
 
 	//Funkcje
+
+	//Grafiki przeszkod
+	sf::Texture przeszkodaGrafika1;
+	sf::Texture przeszkodaGrafika2;
+	sf::Texture przeszkodaGrafika3;
+
 	void stworzPrzeszkode();
 	void pollEvents();
 	
@@ -89,6 +99,7 @@ public:
 	void updateText();
 	void updateWynik();
 	void update();
+	void updateTlo();
 	
 	void renderPrzeszkoda();
 	void renderMoneta();
